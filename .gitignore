@@ -16,6 +16,9 @@ wheels/
 # IDE
 .vscode/
 
+# Package management
+uv.lock
+
 # Other
 yoyo.ini
 *.sqlite
