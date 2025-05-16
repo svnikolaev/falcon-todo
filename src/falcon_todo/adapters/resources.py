@@ -1,12 +1,14 @@
+import logging
+import sqlite3
 from dataclasses import dataclass
 from datetime import datetime
+
 import falcon
 from embrace import pool
-import sqlite3
 
 # from falcon_todo.adapters import dto
 from falcon_todo.adapters import repositories as repo
-from falcon_todo import services as svc
+from falcon_todo.application import services as svc
 
 app = falcon.App()
 
@@ -14,12 +16,18 @@ app = falcon.App()
 @dataclass
 class TodoItemResource:
     todo_items: svc.TodoItemService
+    logger: logging.Logger = logging.getLogger(__name__)
 
-    def on_get(self, req: falcon.Request, resp: falcon.Response):
-        user = req.media.get('user', )
-        todo_items = self.todo_items.get()
-        resp.content_type = falcon.MEDIA_JSON
-        resp.media = todo_items
+    def on_get(self, req: falcon.Request, resp: falcon.Response, username: str):
+        self.logger.debug("Received GET request")
+        # import pdb; pdb.set_trace()
+        if not username:
+            resp.status_code = falcon.HTTP_400
+            resp.media = {"error": "User not provided"}
+        else:
+            todo_items = self.todo_items.get_todo_items(username)
+            resp.content_type = falcon.MEDIA_JSON
+            resp.media = todo_items
 
     def on_post(self, req: falcon.Request, resp: falcon.Response):
         try:
@@ -51,20 +59,10 @@ class Homepage:
         resp.text = 'Hello, Falcon! \n'
 
 
-def create_app() -> falcon.App:
-    connection_pool = pool.ConnectionPool(
-        lambda: sqlite3.connect('mydb.sqlite'),
-        limit=10
-    )
-    todo_item_resource = TodoItemResource(
-        svc.TodoItemService(
-            todo_repo=repo.TodoRepo(connection=...),
-            users_repo=repo.UserRepo(connection=...),
-        ),
-    )
+def create_app(todo_item_resource: TodoItemResource) -> falcon.App:
     app.add_route('/', Homepage())
-    app.add_route('/todo',todo_item_resource)
-
+    app.add_route('/todo/{username}', todo_item_resource)
+    app.add_route('/todo', todo_item_resource)
     return app
 
 

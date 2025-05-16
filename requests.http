@@ -1,0 +1,5 @@
+### get todo
+GET http://127.0.0.1:8000/todo
+Username: admin
+
+### next

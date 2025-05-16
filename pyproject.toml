@@ -9,6 +9,7 @@ dependencies = [
     "falcon>=4.0.2",
     "yoyo-migrations>=9.0.0",
 ]
+src_root = "src"
 
 [dependency-groups]
 dev = [

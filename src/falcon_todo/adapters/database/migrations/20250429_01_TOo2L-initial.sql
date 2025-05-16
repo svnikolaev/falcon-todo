@@ -56,3 +56,12 @@ INSERT INTO user_roles (user, role)
 VALUES ('admin', 'admin'), -- admin is an admin
        ('user1', 'user'), -- user1 is a regular user
        ('user2', 'user'); -- user2 is a regular user
+
+INSERT INTO todo_items (user_id, task, completed, is_active)
+VALUES 
+    (1, 'Complete initial setup', FALSE, TRUE),
+    (2, 'Review database schema', FALSE, TRUE),
+    (3, 'Test API endpoints', FALSE, TRUE),
+    (1, 'Configure user roles', FALSE, TRUE),
+    (2, 'Implement authentication', FALSE, TRUE),
+    (3, 'Setup CI/CD pipeline', FALSE, TRUE);

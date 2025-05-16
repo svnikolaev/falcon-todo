@@ -1,11 +1,11 @@
-from adapters.dto import TodoItem, User
-from dataclasses import dataclass
+from falcon_todo.adapters.dto import TodoItem, User
+from dataclasses import dataclass, asdict
 
 
 class TodoRepositoryInterface:
-    def get(self, user_id: str | None, id: int | None) -> list[TodoItem]: ...
+    def get(self, user_id: int | None, id: int | None) -> list[TodoItem]: ...
 
-    def add(self, user_id: str, task: str) -> TodoItem | None: ...
+    def add(self, user_id: int, task: str) -> TodoItem | None: ...
 
     def update(self, id: int, task: str) -> TodoItem | None: ...
 
@@ -13,17 +13,19 @@ class TodoRepositoryInterface:
 
 
 class UsersRepositoryInterface:
-    def get(self, username: str) -> User: ...
+    def get(self, username: str) -> User | None: ...
 
 
 @dataclass
 class TodoItemService:
-    todo_repo: TodoRepositoryInterface
+    repo: TodoRepositoryInterface
     users_repo: UsersRepositoryInterface
 
-    def get_todo_items(self, username: str):
-        user_id = self.users_repo.get(username=username).id
-        return self.repo.get(user_id=user_id)
+    def get_todo_items(self, username: str) -> list[dict]:
+        user = self.users_repo.get(username=username)
+        if not user:
+            return []
+        return [asdict(item) for item in self.repo.get(user_id=user.id)]
 
     def add_todo_item(self, username: str, task: str):
         user_id = self.users_repo.get(username=username).id
