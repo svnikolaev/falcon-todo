@@ -1,5 +1,10 @@
-### get todo
-GET http://127.0.0.1:8000/todo
-Username: admin
+### get todo of user admin
+GET http://127.0.0.1:8000/todo/admin
+
+### get todo of user user1
+GET http://127.0.0.1:8000/todo/user1
+
+### get todo of user user2
+GET http://127.0.0.1:8000/todo/user2
 
 ### next
