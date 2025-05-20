@@ -1,5 +1,7 @@
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
 from falcon_todo.adapters.dto import TodoItem, User
-from dataclasses import dataclass, asdict
 
 
 class TodoRepositoryInterface:
@@ -25,7 +27,19 @@ class TodoItemService:
         user = self.users_repo.get(username=username)
         if not user:
             return []
-        return [asdict(item) for item in self.repo.get(user_id=user.id)]
+
+        return [
+            {
+                **asdict(item),
+                'created_at': item.created_at.isoformat()
+                if isinstance(item.created_at, datetime)
+                else None,
+                'updated_at': item.updated_at.isoformat()
+                if isinstance(item.updated_at, datetime)
+                else None,
+            }
+            for item in self.repo.get(user_id=user.id)
+        ]
 
     def add_todo_item(self, username: str, task: str):
         user_id = self.users_repo.get(username=username).id

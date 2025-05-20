@@ -1,4 +1,5 @@
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 
 from falcon_todo.adapters.dto import TodoItem, User
 
@@ -20,6 +21,7 @@ USERS_DATA = {
 class DictTodoRepo:
     _data: dict[int, TodoItem] = {}
     _id: int = 0
+    logger: logging.Logger = logging.getLogger(__name__)
 
     def __init__(self, data: dict[int, TodoItem] | None = None):
         if data:
@@ -50,30 +52,39 @@ class DictTodoRepo:
             id=self._id,
             user_id=user_id,
             task=task,
-            created_at=datetime.now(tz=datetime.timezone.utc),
-            updated_at=datetime.now(tz=datetime.timezone.utc),
+            created_at=datetime.now(tz=timezone.utc),
+            updated_at=datetime.now(tz=timezone.utc),
         )
-        return self._data[self._id]
+        return self.get(id=self._id)
 
     def update(self, id: int, task: str) -> TodoItem | None:
-        item = self.get(id)
+        item = self.get(id=id)
         if not item:
             return
-        item['task'] = task
+        else:
+            item = item[0]
+        item.task = task
+        item.updated_at = datetime.now(tz=timezone.utc)
         self._data[id] = item
         return item
 
     def delete(self, id: int) -> bool:
-        item = self.get(id)
+        item = self.get(id=id)
         if not item:
             return False
-        self._data[id]['is_active'] = False
+        else:
+            item = item[0]
+        self.logger.debug(item)
+        item.is_active = False
+        item.updated_at = datetime.now(tz=timezone.utc)
+        self._data[id] = item
         return True
 
 
 class DictUserRepo:
     _data: dict[int, User] = {}
     _id: int = 0
+    logger: logging.Logger = logging.getLogger(__name__)
 
     def __init__(self, data: dict[int, User] | None = None):
         if data:
@@ -86,48 +97,3 @@ class DictUserRepo:
             user for user in self._data.values() if user.username == username
         ]
         return None if not users else users[0]
-
-
-class TodoRepo:
-    def __init__(self, connection):
-        self._connection = connection
-
-    def get(
-        self, id: int | None = None
-    ) -> list[TodoItem] | TodoItem | None: ...
-
-    def add(self, task: str) -> TodoItem | None:
-        # self._id += 1
-        # self._data[self._id] = TodoItem(
-        #     id=self._id,
-        #     user_id=0,
-        #     task=task,
-        #     created_at=datetime.now(tz=datetime.timezone.utc),
-        #     updated_at=datetime.now(tz=datetime.timezone.utc),
-        # )
-        # return self._data[self._id]
-        ...
-
-    def update(self, id: int, task: str) -> TodoItem | None:
-        # item = self.get(id)
-        # if not item:
-        #     return
-        # item['task'] = task
-        # self._data[id] = task
-        # return task
-        ...
-
-    def delete(self, id: int) -> bool:
-        # item = self.get(id)
-        # if not item:
-        #     return
-        # self._data[id]['is_active'] = False
-        # return True
-        ...
-
-
-class UserRepo:
-    def __init__(self, connection):
-        self._connection = connection
-
-    def get(self, username: str): ...
