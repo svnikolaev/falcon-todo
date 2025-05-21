@@ -1,0 +1,33 @@
+### Get TODOs of user "admin"
+GET http://127.0.0.1:8000/todo
+username: admin
+
+### Get TODOs of user "user1"
+GET http://127.0.0.1:8000/todo
+username: user1
+
+### Post new TODO item for user "admin"
+POST http://127.0.0.1:8000/todo
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "task": "Buy groceries"
+}
+
+### Update an existing TODO item for user "admin"
+PATCH http://127.0.0.1:8000/todo
+Content-Type: application/json
+
+{
+  "id": 1,
+  "task": "UPD: Buy groceries and milk"
+}
+
+### Delete a TODO item for user "admin"
+DELETE http://127.0.0.1:8000/todo
+Content-Type: application/json
+
+{
+    "id": 7
+}

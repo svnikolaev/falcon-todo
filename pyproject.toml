@@ -1,5 +1,5 @@
 [project]
-name = "falcon-to-do-app"
+name = "falcon-todo"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,8 +9,23 @@ dependencies = [
     "falcon>=4.0.2",
     "yoyo-migrations>=9.0.0",
 ]
+src_root = "src"
 
 [dependency-groups]
 dev = [
     "pytest>=8.3.5",
 ]
+
+[tool.ruff]
+line-length = 80
+
+[tool.flake8]
+max-line-length = 80
+
+[tool.ruff.format]
+# Prefer single quotes over double quotes.
+quote-style = "single"
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+multiline-quotes = "single"
