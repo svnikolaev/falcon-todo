@@ -5,8 +5,6 @@ import falcon
 
 from falcon_todo.application import services as svc
 
-app = falcon.App()
-
 
 @dataclass
 class TodoItemResource:
@@ -88,9 +86,15 @@ class Homepage:
 
 def create_app(
     todo_item_resource: TodoItemResource,
+    allow_origins: str = '*',
     logger: logging.Logger = logging.getLogger(__name__),
 ) -> falcon.App:
     logger.info('Creating API app')
+    app = falcon.App(
+        middleware=falcon.CORSMiddleware(
+            allow_origins=allow_origins,
+        )
+    )
     app.add_route('/', Homepage())
     app.add_route('/todo', todo_item_resource)
     return app

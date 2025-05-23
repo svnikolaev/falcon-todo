@@ -17,7 +17,7 @@ logging.basicConfig(
 )
 
 
-def build_app():
+def build_app(host: str = '127.0.0.1', port: int = 8000):
     todo_repo = repo.DictTodoRepo(data=repo.TODO_DATA)
     users_repo = repo.DictUserRepo(data=repo.USERS_DATA)
     todo_item_resource = res.TodoItemResource(
@@ -26,7 +26,10 @@ def build_app():
             users_repo=users_repo,
         ),
     )
-    app = res.create_app(todo_item_resource=todo_item_resource)
+    app = res.create_app(
+        todo_item_resource=todo_item_resource,
+        allow_origins=[f'http://{host}:{port}'],
+    )
     return app
 
 
@@ -39,5 +42,7 @@ def start_dev_server(
 
 
 if __name__ == '__main__':
-    app = build_app()
-    start_dev_server(app=app)
+    host = '127.0.0.1'
+    port = 8000
+    app = build_app(host=host, port=port)
+    start_dev_server(app=app, host=host, port=port)
